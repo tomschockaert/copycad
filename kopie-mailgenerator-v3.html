@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Copycenter mailgenerator – Sint-Paulusinstituut</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F6F8F9;
+    --surface: #FFFFFF;
+    --surface2: #EEF4F2;
+    --border: #C8DAD6;
+    --border2: #90BCBA;
+    --text: #2C3E50;
+    --text2: #5A7A8A;
+    --text3: #9AB4BC;
+    --accent: #2E6A9E;
+    --accent-bg: #EEF5F8;
+    --danger: #A0291E;
+    --danger-bg: #FBECEA;
+    --success: #1A6645;
+    --success-bg: #E8F5EE;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --grad: linear-gradient(135deg, #4DB896 0%, #3B7AB0 60%, #2E5F8A 100%);
+    --grad-hover: linear-gradient(135deg, #3DA882 0%, #2E6A9E 60%, #254E75 100%);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 780px; margin: 0 auto; }
+
+  /* HEADER */
+  header {
+    margin-bottom: 2rem;
+    background: var(--grad);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  header .logo-wrap {
+    background: #fff;
+    border-radius: 10px;
+    padding: 7px 11px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  header .logo-wrap img { height: 46px; width: auto; display: block; }
+  header .header-text h1 {
+    font-size: 19px; font-weight: 600;
+    background: linear-gradient(90deg, #C8EDE4 0%, #fff 45%, #C0D8EE 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  header .header-text p { font-size: 13px; color: rgba(255,255,255,0.72); margin-top: 3px; }
+
+  /* WIZARD */
+  #wizard { display: block; }
+  #wizard.hidden { display: none; }
+  .wizard-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  .wizard-card h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .wizard-card .wiz-sub { font-size: 14px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.5; }
+  .wiz-step { display: none; }
+  .wiz-step.active { display: block; }
+
+  .step-indicator { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .step-dot { height: 4px; flex: 1; border-radius: 2px; background: var(--border); transition: background 0.2s; }
+  .step-dot.done { background: #4DB896; }
+  .step-dot.active { background: #3B7AB0; }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .sec-label {
+    font-size: 12px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    display: block; margin-bottom: 10px;
+  }
+  .section { margin-bottom: 1.5rem; }
+
+  .field { margin-bottom: 1rem; }
+  .field label { font-size: 13px; color: var(--text2); display: block; margin-bottom: 5px; }
+  .field input, .field select {
+    width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px;
+    padding: 9px 12px; border: 0.5px solid var(--border2);
+    border-radius: var(--radius); background: var(--bg); color: var(--text); outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field select:focus { border-color: #3B7AB0; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row .field { flex: 1; min-width: 140px; }
+
+  .graad-blok { margin-bottom: 12px; }
+  .graad-titel {
+    font-size: 13px; font-weight: 600; color: var(--text2);
+    padding: 8px 0; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    border-bottom: 0.5px solid var(--border);
+    user-select: none;
+  }
+  .graad-titel .pijl { font-size: 11px; transition: transform 0.2s; }
+  .graad-titel.open .pijl { transform: rotate(90deg); }
+  .graad-klassen { display: none; padding: 10px 0 4px; }
+  .graad-klassen.open { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 8px; }
+
+  .klas-check {
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text);
+    background: var(--bg);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .klas-check:hover { background: var(--surface2); }
+  .klas-check.selected { border: 1.5px solid #3B7AB0; background: var(--accent-bg); color: #2E6A9E; }
+  .klas-check input[type=checkbox] { display: none; }
+  .klas-check .vinkje {
+    width: 16px; height: 16px; border-radius: 4px;
+    border: 1.5px solid var(--border2);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: #fff;
+    background: transparent; transition: all 0.15s;
+  }
+  .klas-check.selected .vinkje { background: #3B7AB0; border-color: #3B7AB0; }
+
+  .klas-card {
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--bg);
+    user-select: none;
+  }
+  .klas-card:hover { background: var(--surface2); }
+  .klas-card.selected { border: 1.5px solid #3B7AB0; background: var(--accent-bg); }
+  .klas-card.selected .klas-naam { color: #2E6A9E; }
+  .klas-naam { font-size: 14px; font-weight: 600; color: var(--text); }
+  .klas-lln { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .klas-input {
+    width: 100%; margin-top: 8px;
+    font-family: 'DM Mono', monospace; font-size: 13px;
+    padding: 5px 8px; border: 0.5px solid var(--border2);
+    border-radius: 6px; background: var(--surface); color: var(--text); outline: none;
+  }
+  .klas-card.selected .klas-input { border-color: #90C4B8; background: #fff; }
+  .klassen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 8px; }
+
+  .tabs { display: flex; gap: 4px; background: var(--surface2); border-radius: var(--radius); padding: 4px; margin-bottom: 1.5rem; }
+  .tab {
+    flex: 1; padding: 8px 12px; border: none; background: none;
+    border-radius: calc(var(--radius) - 2px);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; color: var(--text2); transition: all 0.15s;
+  }
+  .tab.active { background: var(--surface); color: #2E6A9E; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .toggle-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tog {
+    padding: 7px 16px; border: 0.5px solid var(--border2);
+    border-radius: var(--radius); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    background: var(--bg); color: var(--text2); transition: all 0.15s;
+  }
+  .tog.on { background: var(--grad); border-color: #2E5F8A; color: #fff; }
+
+  .jaar-tab { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .jaar-btn {
+    padding: 6px 16px; border: 0.5px solid var(--border);
+    border-radius: var(--radius); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    background: var(--bg); color: var(--text2); transition: all 0.15s;
+  }
+  .jaar-btn.active { background: var(--grad); border-color: #2E5F8A; color: #fff; font-weight: 500; }
+
+  .mail-preview {
+    border: 0.5px solid var(--border); border-radius: var(--radius);
+    background: #fff; min-height: 80px; overflow: hidden;
+  }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .btn {
+    padding: 9px 18px; background: var(--surface);
+    border: 0.5px solid var(--border2); border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; color: var(--text); transition: all 0.15s;
+  }
+  .btn:hover { background: var(--surface2); }
+  .btn.primary { background: var(--grad); border-color: #2E5F8A; color: #fff; }
+  .btn.primary:hover { background: var(--grad-hover); }
+  .btn.full { width: 100%; justify-content: center; padding: 12px; }
+
+  .notice {
+    font-size: 13px; color: var(--text2); margin-top: 8px;
+    line-height: 1.6; padding: 10px 14px;
+    background: var(--surface2); border-radius: var(--radius);
+    border-left: 3px solid var(--border2);
+  }
+  .success-msg {
+    display: none; font-size: 13px; color: var(--success);
+    background: var(--success-bg); border-radius: var(--radius);
+    padding: 8px 14px; margin-top: 10px;
+  }
+
+  .profiel-badge {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: var(--surface2);
+    border-radius: var(--radius); margin-bottom: 1.5rem;
+    font-size: 13px; color: var(--text2);
+  }
+  .profiel-badge strong { color: var(--text); }
+  .profiel-badge .wijzig-link { margin-left: auto; font-size: 12px; color: #3B7AB0; cursor: pointer; text-decoration: underline; }
+
+  .beheer-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 0.5px solid var(--border); flex-wrap: wrap;
+  }
+  .beheer-item:last-child { border-bottom: none; }
+  .lbl-small { font-size: 12px; color: var(--text3); display: block; margin-bottom: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo-wrap">
+      <img src="https://lh3.googleusercontent.com/Etoc7lExo8pFshZuDwHBcFiy7afjDkS7fNF7hDbAZE7n8giihOdzYcxsSbWRCJRuvJ6FAvwPwT_T_7fEi_h72DUR1ecGpU4aQ3Uj=l80-w1500-e365" alt="Sint-Paulusinstituut" onerror="this.parentElement.style.display='none'" />
+    </div>
+    <div class="header-text">
+      <h1>Copycenter mailgenerator</h1>
+      <p>Sint-Paulusinstituut Herzele &mdash; Snel een kopieeropdracht naar Lindsay sturen.</p>
+    </div>
+  </header>
+
+  <div id="wizard" class="hidden">
+    <div class="wizard-card">
+      <div class="step-indicator">
+        <div class="step-dot active" id="dot0"></div>
+        <div class="step-dot" id="dot1"></div>
+        <div class="step-dot" id="dot2"></div>
+      </div>
+      <div class="wiz-step active" id="wiz-stap0">
+        <h2>Welkom bij de Copycenter mailgenerator</h2>
+        <p class="wiz-sub">We stellen je profiel in. Dit duurt maar even en je hoeft het slechts één keer te doen.</p>
+        <div class="field">
+          <label>Jouw voornaam en naam</label>
+          <input id="wiz-naam" placeholder="bv. Ingrid De Hanscutter" />
+        </div>
+        <div class="field">
+          <label>Jouw e-mailadres (@sint-paulus.be)</label>
+          <input id="wiz-email" type="email" placeholder="voornaam.naam@sint-paulus.be" />
+        </div>
+        <div style="margin-top:1.5rem;">
+          <button class="btn primary full" onclick="wizStap(1)">Volgende →</button>
+        </div>
+      </div>
+      <div class="wiz-step" id="wiz-stap1">
+        <h2>Welke klassen geef jij les?</h2>
+        <p class="wiz-sub">Selecteer alle klassen waarbij jij kopieën kan aanvragen. Je kan dit later altijd aanpassen.</p>
+        <div id="wiz-klassen"></div>
+        <div style="margin-top:1.5rem; display:flex; gap:8px;">
+          <button class="btn" onclick="wizStap(0)">← Terug</button>
+          <button class="btn primary" style="flex:1;" onclick="wizStap(2)">Volgende →</button>
+        </div>
+      </div>
+      <div class="wiz-step" id="wiz-stap2">
+        <h2>Alles klaar!</h2>
+        <p class="wiz-sub">Jouw profiel is ingesteld. Je kan altijd via "Mijn profiel" aanpassingen doen bij het begin van een nieuw schooljaar.</p>
+        <div id="wiz-samenvatting" style="font-size:14px; line-height:1.8; color:var(--text2); margin-bottom:1.5rem;"></div>
+        <button class="btn primary full" onclick="wizAfronden()">Aan de slag →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" style="display:none;">
+    <div class="profiel-badge">
+      <span>Ingelogd als: <strong id="badge-naam"></strong> &mdash; <span id="badge-email" style="color:#3B7AB0;"></span></span>
+      <span class="wijzig-link" onclick="profielWijzigen()">Profiel wijzigen</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('mail', this)">Mail opstellen</button>
+      <button class="tab" onclick="switchTab('klassen', this)">Mijn klassen</button>
+    </div>
+
+    <div class="panel active" id="tab-mail">
+      <div class="card">
+        <div class="section">
+          <span class="sec-label">Bijlage</span>
+          <div class="row">
+            <div class="field" style="flex:2; min-width:200px;">
+              <label>Beschrijving bijlage</label>
+              <input id="bijlage" placeholder="bv. hoofdstuk 3 – oefeningen" />
+            </div>
+            <div class="field" style="max-width:140px;">
+              <label>Aantal pagina's</label>
+              <input id="paginas" type="number" min="1" value="2" />
+            </div>
+            <div class="field" style="max-width:200px; position:relative;">
+              <label>Nodig tegen (datum)</label>
+              <div id="datum-display" onclick="toggleKalender()"
+                style="padding:9px 12px; border:0.5px solid var(--border2); border-radius:var(--radius);
+                       background:var(--bg); color:var(--text2); cursor:pointer; font-size:14px;
+                       display:flex; align-items:center; justify-content:space-between; user-select:none;">
+                <span id="datum-tekst">Kies een datum</span>
+                <span style="font-size:16px;">📅</span>
+              </div>
+              <div id="kalender-popup" style="display:none; position:absolute; top:100%; left:0; z-index:200;
+                background:var(--surface); border:0.5px solid var(--border2); border-radius:var(--radius-lg);
+                box-shadow:0 4px 16px rgba(0,0,0,0.12); padding:12px; min-width:260px; margin-top:4px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                  <button onclick="kalenderNav(-1)" style="border:none;background:none;cursor:pointer;font-size:18px;color:var(--text2);padding:2px 8px;">‹</button>
+                  <span id="kal-maand-jaar" style="font-size:14px;font-weight:600;color:var(--text);"></span>
+                  <button onclick="kalenderNav(1)" style="border:none;background:none;cursor:pointer;font-size:18px;color:var(--text2);padding:2px 8px;">›</button>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px;">
+                  <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0;">Ma</div>
+                  <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0;">Di</div>
+                  <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0;">Wo</div>
+                  <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0;">Do</div>
+                  <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0;">Vr</div>
+                  <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0;">Za</div>
+                  <div style="text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:4px 0;">Zo</div>
+                </div>
+                <div id="kal-dagen" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;"></div>
+                <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border);text-align:center;">
+                  <span onclick="kiesDatum(null)" style="font-size:12px;color:var(--text3);cursor:pointer;text-decoration:underline;">Datum wissen</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- NIEUW: Onderwerp veld -->
+          <div class="field" style="margin-bottom:0;">
+            <label>Onderwerp (verschijnt in de mail)</label>
+            <input id="onderwerp" placeholder="bv. Kopieën literatuur – 5de jaar" />
+          </div>
+        </div>
+        <div class="section">
+          <span class="sec-label">Afdruk</span>
+          <div class="toggle-row" style="margin-bottom:10px;">
+            <div class="tog on" id="btn-dbl" onclick="setZijdig('dbl')">Dubbelzijdig</div>
+            <div class="tog" id="btn-enk" onclick="setZijdig('enk')">Enkelzijdig</div>
+          </div>
+          <div class="toggle-row">
+            <div class="tog" id="btn-nieten" onclick="toggleOptie('nieten',this)">Nieten</div>
+            <div class="tog" id="btn-perforeren" onclick="toggleOptie('perforeren',this)">Perforeren</div>
+            <div class="tog" id="btn-kleur" onclick="toggleOptie('kleur',this)">Kleurafdruk</div>
+          </div>
+        </div>
+        <div class="section">
+          <span class="sec-label">Type kopieën</span>
+          <div class="toggle-row">
+            <div class="tog" id="btn-ander" onclick="setType('ander',this)">Ander (cursus / toets / taak)</div>
+            <div class="tog" id="btn-examen" onclick="setType('examen',this)">Examen</div>
+          </div>
+          <p id="type-waarschuwing" style="display:none;font-size:12px;color:var(--danger);margin-top:6px;">
+            ⚠ Examenkopieën zijn ten laste van de school en worden niet doorgerekend aan leerlingen.
+          </p>
+        </div>
+        <div class="section">
+          <span class="sec-label">Opmerkingen</span>
+          <textarea id="opmerkingen" rows="2"
+            placeholder="Optioneel — bv. enkelzijdig voor de eerste pagina, andere instructies..."
+            style="width:100%;font-family:'DM Sans',sans-serif;font-size:14px;padding:9px 12px;
+                   border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);
+                   color:var(--text);outline:none;resize:vertical;transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#3B7AB0'" onblur="this.style.borderColor=''"></textarea>
+        </div>
+        <div class="section" style="margin-bottom:0;">
+          <span class="sec-label">Klassen</span>
+          <div class="jaar-tab" id="jaar-tabs"></div>
+          <div id="klas-grid" class="klassen-grid"></div>
+        </div>
+      </div>
+
+      <button class="btn primary full" onclick="genereer()">Mail genereren ↗</button>
+
+      <div class="card" style="margin-top:1rem;">
+        <span class="sec-label">Voorbeeld van de mail</span>
+        <div class="mail-preview" id="mail-output">
+          <div style="padding:1rem 1.25rem; font-size:13px; color:var(--text3);">Selecteer klassen en klik op "Mail genereren".</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" onclick="kopieer()">Kopieer tekst</button>
+          <button class="btn primary" id="btn-open-mail" onclick="openMail()" style="display:none;">Versturen via Gmail ↗</button>
+        </div>
+        <div class="notice" id="mail-notice" style="display:none;">
+          Tip: Gmail opent in een nieuw tabblad vanuit <strong id="notice-email"></strong>. De mail staat klaar om te versturen — voeg je PDF-bijlage toe en klik op Verzenden.
+        </div>
+        <div id="sheet-status" style="display:none; font-size:13px; border-radius:var(--radius); padding:8px 14px; margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="tab-klassen">
+      <div class="card">
+        <span class="sec-label">Mijn klassen dit schooljaar</span>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Vink aan welke klassen jij dit jaar lesgeeft. Pas dit aan bij het begin van elk nieuw schooljaar.</p>
+        <div id="beheer-klassen"></div>
+      </div>
+      <button class="btn primary full" onclick="slaKlassenOp()">Wijzigingen opslaan</button>
+      <div class="success-msg" id="opslaan-msg">✓ Jouw klassenlijst is opgeslagen.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ALLE_KLASSEN = [
+  { naam:'1A TAL1',    jaar:1, lln:20 },
+  { naam:'1A TAL2',    jaar:1, lln:8  },
+  { naam:'1A TAL3 CL', jaar:1, lln:14 },
+  { naam:'1A TAL4 CL', jaar:1, lln:20 },
+  { naam:'1A TAL5 CL', jaar:1, lln:20 },
+  { naam:'1A LAT1',    jaar:1, lln:17 },
+  { naam:'1A LAT2 CL', jaar:1, lln:19 },
+  { naam:'2 EO1',      jaar:2, lln:15 },
+  { naam:'2 EO2 CL',   jaar:2, lln:3  },
+  { naam:'2 MTW1',     jaar:2, lln:21 },
+  { naam:'2 MTW2',     jaar:2, lln:10 },
+  { naam:'2 MTW3 CL',  jaar:2, lln:14 },
+  { naam:'2 LAT1',     jaar:2, lln:9  },
+  { naam:'2 LAT2 CL',  jaar:2, lln:16 },
+  { naam:'3 LAT1',     jaar:3, lln:4  },
+  { naam:'3 LAT2 CL',  jaar:3, lln:9  },
+  { naam:'3 EW1 CL',   jaar:3, lln:3  },
+  { naam:'3 EW2',      jaar:3, lln:2  },
+  { naam:'3 EW3 CL',   jaar:3, lln:4  },
+  { naam:'3 EW4',      jaar:3, lln:4  },
+  { naam:'3 NW1',      jaar:3, lln:11 },
+  { naam:'3 NW2 CL',   jaar:3, lln:5  },
+  { naam:'3 NW3 CL',   jaar:3, lln:13 },
+  { naam:'3 BW',       jaar:3, lln:9  },
+  { naam:'3 BSW',      jaar:3, lln:14 },
+  { naam:'3 BO',       jaar:3, lln:3  },
+  { naam:'4 LAT1',     jaar:4, lln:6  },
+  { naam:'4 LAT2 CL',  jaar:4, lln:9  },
+  { naam:'4 EW1 CL',   jaar:4, lln:8  },
+  { naam:'4 EW2',      jaar:4, lln:17 },
+  { naam:'4 EW3 CL',   jaar:4, lln:1  },
+  { naam:'4 EW4',      jaar:4, lln:9  },
+  { naam:'4 NW1',      jaar:4, lln:19 },
+  { naam:'4 NW2 CL',   jaar:4, lln:15 },
+  { naam:'4 BW',       jaar:4, lln:15 },
+  { naam:'4 BSW',      jaar:4, lln:3  },
+  { naam:'4 BO',       jaar:4, lln:6  },
+  { naam:'5 EMT1',     jaar:5, lln:13 },
+  { naam:'5 EMT2',     jaar:5, lln:8  },
+  { naam:'5 MT1',      jaar:5, lln:1  },
+  { naam:'5 MT2/LAT',  jaar:5, lln:2  },
+  { naam:'5 WW1',      jaar:5, lln:14 },
+  { naam:'5 WW2/LAT',  jaar:5, lln:2  },
+  { naam:'5 EWI',      jaar:5, lln:3  },
+  { naam:'5 MTW1',     jaar:5, lln:18 },
+  { naam:'5 MTW2/LAT', jaar:5, lln:3  },
+  { naam:'5 BCSW',     jaar:5, lln:6  },
+  { naam:'5 BW',       jaar:5, lln:17 },
+  { naam:'5 IHL',      jaar:5, lln:19 },
+  { naam:'6 EMT',      jaar:6, lln:7  },
+  { naam:'6 MT1',      jaar:6, lln:4  },
+  { naam:'6 MT2/LAT',  jaar:6, lln:1  },
+  { naam:'6 WW1',      jaar:6, lln:12 },
+  { naam:'6 WW2/LAT',  jaar:6, lln:2  },
+  { naam:'6 MTW1',     jaar:6, lln:5  },
+  { naam:'6 MTW2/LAT', jaar:6, lln:2  },
+  { naam:'6 BCSW',     jaar:6, lln:7  },
+  { naam:'6 BW',       jaar:6, lln:16 },
+  { naam:'6 IHL',      jaar:6, lln:5  },
+];
+
+const GRAAD_LABELS = { 1:'1ste jaar', 2:'2de jaar', 3:'3de jaar', 4:'4de jaar', 5:'5de jaar', 6:'6de jaar' };
+const STORAGE_KEY = 'spi_kopie_profiel_v1';
+const REG_KEY = 'spi_kopie_registratie_v1';
+
+// Koppeling Google Sheets — bewaard zoals de collega het had
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxEU2Q1f9uylxMxJay9zlPJI4ugqIPW3fYKI8CTGAoJzpkSXVFoDZqNqxDqfmEgDK0/exec';
+
+let profiel = null;
+const selected = {};
+const opties = { nieten: false, perforeren: false, kleur: false };
+let kopieType = null;
+let dubbelzijdig = true;
+let actiefjaar = null;
+let mailTekst = '';
+let mailHtml = '';
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function init() {
+  const opgeslagen = localStorage.getItem(STORAGE_KEY);
+  if (opgeslagen) {
+    profiel = JSON.parse(opgeslagen);
+    document.getElementById('wizard').classList.add('hidden');
+    startApp();
+  } else {
+    document.getElementById('wizard').classList.remove('hidden');
+    renderWizKlassen();
+  }
+}
+
+// ─── WIZARD ───────────────────────────────────────────────────────────────────
+function wizStap(nr) {
+  if (nr === 1) {
+    const naam = document.getElementById('wiz-naam').value.trim();
+    const email = document.getElementById('wiz-email').value.trim();
+    if (!naam) { alert('Vul je naam in.'); return; }
+    if (!email.includes('@')) { alert('Vul een geldig e-mailadres in.'); return; }
+  }
+  if (nr === 2) {
+    const gekozen = wizGekozenKlassen();
+    if (!gekozen.length) { alert('Selecteer minstens één klas.'); return; }
+    const groepenTxt = groepenVanKlassen(gekozen).map(g =>
+      `<strong>${GRAAD_LABELS[g.jaar]}:</strong> ${g.klassen.join(', ')}`).join('<br>');
+    document.getElementById('wiz-samenvatting').innerHTML =
+      `<strong>${document.getElementById('wiz-naam').value.trim()}</strong><br>
+       ${document.getElementById('wiz-email').value.trim()}<br><br>${groepenTxt}`;
+  }
+  document.querySelectorAll('.wiz-step').forEach((s,i) => s.classList.toggle('active', i === nr));
+  document.querySelectorAll('.step-dot').forEach((d,i) => {
+    d.classList.toggle('done', i < nr);
+    d.classList.toggle('active', i === nr);
+  });
+}
+
+function wizGekozenKlassen() {
+  return [...document.querySelectorAll('.wiz-klas-check.selected')].map(el => el.dataset.naam);
+}
+
+function renderWizKlassen() {
+  const container = document.getElementById('wiz-klassen');
+  container.innerHTML = '';
+  [...new Set(ALLE_KLASSEN.map(k => k.jaar))].sort().forEach(jaar => {
+    const blok = document.createElement('div');
+    blok.className = 'graad-blok';
+    const lijst = ALLE_KLASSEN.filter(k => k.jaar === jaar);
+    blok.innerHTML = `
+      <div class="graad-titel open" onclick="toggleGraad(this)">
+        <span class="pijl">▶</span> ${GRAAD_LABELS[jaar]}
+      </div>
+      <div class="graad-klassen open">
+        ${lijst.map(k => `
+          <div class="klas-check wiz-klas-check" data-naam="${k.naam}" onclick="toggleWizKlas(this)">
+            <div class="vinkje">✓</div><span>${k.naam}</span>
+          </div>`).join('')}
+      </div>`;
+    container.appendChild(blok);
+  });
+}
+
+function toggleGraad(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+function toggleWizKlas(el) { el.classList.toggle('selected'); }
+
+function wizAfronden() {
+  profiel = {
+    naam: document.getElementById('wiz-naam').value.trim(),
+    email: document.getElementById('wiz-email').value.trim(),
+    klassen: wizGekozenKlassen()
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(profiel));
+  document.getElementById('wizard').classList.add('hidden');
+  document.getElementById('app').style.display = 'block';
+  startApp();
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+function startApp() {
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('badge-naam').textContent = profiel.naam;
+  document.getElementById('badge-email').textContent = profiel.email;
+  renderJaarTabs();
+  renderBeheerKlassen();
+}
+
+function profielWijzigen() {
+  document.getElementById('wiz-naam').value = profiel.naam;
+  document.getElementById('wiz-email').value = profiel.email;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('wizard').classList.remove('hidden');
+  renderWizKlassen();
+  setTimeout(() => {
+    document.querySelectorAll('.wiz-klas-check').forEach(el => {
+      if (profiel.klassen.includes(el.dataset.naam)) el.classList.add('selected');
+    });
+  }, 50);
+  wizStap(0);
+}
+
+// ─── JAAR TABS ────────────────────────────────────────────────────────────────
+function renderJaarTabs() {
+  const jaren = [...new Set(profiel.klassen.map(n => {
+    const k = ALLE_KLASSEN.find(k => k.naam === n);
+    return k ? k.jaar : null;
+  }).filter(Boolean))].sort();
+  const tabsEl = document.getElementById('jaar-tabs');
+  tabsEl.innerHTML = '';
+  jaren.forEach((j, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'jaar-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = GRAAD_LABELS[j];
+    btn.onclick = () => {
+      document.querySelectorAll('.jaar-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      actiefjaar = j;
+      renderKlasGrid();
+    };
+    tabsEl.appendChild(btn);
+  });
+  actiefjaar = jaren[0] || null;
+  renderKlasGrid();
+}
+
+function renderKlasGrid() {
+  const grid = document.getElementById('klas-grid');
+  grid.innerHTML = '';
+  if (!actiefjaar) return;
+  const mijnKlassen = profiel.klassen.filter(n => {
+    const k = ALLE_KLASSEN.find(k => k.naam === n);
+    return k && k.jaar === actiefjaar;
+  });
+  mijnKlassen.forEach(naam => {
+    const id = safeId(naam);
+    const klas = ALLE_KLASSEN.find(k => k.naam === naam);
+    const lln = klas ? klas.lln : 0;
+    const sel = !!selected[id];
+    const val = selected[id + '_n'] !== undefined ? selected[id + '_n'] : lln;
+
+    const div = document.createElement('div');
+    div.className = 'klas-card' + (sel ? ' selected' : '');
+    div.id = 'card-' + id;
+
+    const naamDiv = document.createElement('div');
+    naamDiv.className = 'klas-naam';
+    naamDiv.textContent = naam;
+
+    const llnDiv = document.createElement('div');
+    llnDiv.className = 'klas-lln';
+    llnDiv.textContent = lln + ' lln';
+
+    const inp = document.createElement('input');
+    inp.type = 'number';
+    inp.className = 'klas-input';
+    inp.min = '1';
+    inp.value = val;
+    inp.addEventListener('click', e => e.stopPropagation());
+    inp.addEventListener('input', () => { selected[id + '_n'] = parseInt(inp.value) || 0; });
+
+    div.appendChild(naamDiv);
+    div.appendChild(llnDiv);
+    div.appendChild(inp);
+    div.addEventListener('click', () => toggleKlas(id, div, lln));
+    grid.appendChild(div);
+
+    if (selected[id + '_n'] === undefined) selected[id + '_n'] = lln;
+  });
+}
+
+function toggleKlas(id, el, lln) {
+  selected[id] = !selected[id];
+  el.classList.toggle('selected', selected[id]);
+  if (selected[id] && !selected[id + '_n'] && lln > 0) {
+    const inp = el.querySelector('input');
+    if (inp) { inp.value = lln; selected[id + '_n'] = lln; }
+  }
+}
+
+// ─── BEHEER KLASSEN ───────────────────────────────────────────────────────────
+function renderBeheerKlassen() {
+  const container = document.getElementById('beheer-klassen');
+  container.innerHTML = '';
+  [...new Set(ALLE_KLASSEN.map(k => k.jaar))].sort().forEach(jaar => {
+    const blok = document.createElement('div');
+    blok.className = 'graad-blok';
+    const lijst = ALLE_KLASSEN.filter(k => k.jaar === jaar);
+    blok.innerHTML = `
+      <div class="graad-titel open" onclick="toggleGraad(this)">
+        <span class="pijl">▶</span> ${GRAAD_LABELS[jaar]}
+      </div>
+      <div class="graad-klassen open">
+        ${lijst.map(k => `
+          <div class="klas-check ${profiel.klassen.includes(k.naam) ? 'selected' : ''}"
+               data-naam="${k.naam}" onclick="toggleBeheerKlas(this)">
+            <div class="vinkje">✓</div><span>${k.naam}</span>
+          </div>`).join('')}
+      </div>`;
+    container.appendChild(blok);
+  });
+}
+
+function toggleBeheerKlas(el) { el.classList.toggle('selected'); }
+
+function slaKlassenOp() {
+  profiel.klassen = [...document.querySelectorAll('#beheer-klassen .klas-check.selected')]
+    .map(el => el.dataset.naam);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(profiel));
+  renderJaarTabs();
+  const msg = document.getElementById('opslaan-msg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
+
+// ─── MAIL GENEREREN ───────────────────────────────────────────────────────────
+function genereer() {
+  const bijlage = document.getElementById('bijlage').value || '[bijlage]';
+  const paginas = document.getElementById('paginas').value || '?';
+  const onderwerp = document.getElementById('onderwerp').value.trim() || ('Kopieën – ' + bijlage);
+  const zijdig = dubbelzijdig ? 'dubbelzijdig' : 'enkelzijdig';
+  const extraOpties = [
+    opties.nieten ? 'nieten' : null,
+    opties.perforeren ? 'perforeren' : null,
+    opties.kleur ? 'kleurafdruk' : null
+  ].filter(Boolean);
+  const optiesStr = extraOpties.length ? '\n* opties: ' + extraOpties.join(', ') : '';
+
+  if (!kopieType) {
+    document.getElementById('mail-output').innerHTML =
+      '<div style="padding:1rem 1.25rem;color:#A0291E;font-size:13px;">Selecteer eerst het type kopieën (Ander of Examen).</div>';
+    return;
+  }
+  const gekozen = profiel.klassen.filter(n => selected[safeId(n)]);
+  if (!gekozen.length) {
+    document.getElementById('mail-output').innerHTML =
+      '<div style="padding:1rem 1.25rem;color:#A0291E;font-size:13px;">Selecteer minstens één klas.</div>';
+    return;
+  }
+
+  const groepen = groepenVanKlassen(gekozen);
+  let totaal = 0;
+
+  const tabelRijen = groepen.map(g => {
+    let tot = 0;
+    const rijen = g.klassen.map(naam => {
+      const v = parseInt(selected[safeId(naam) + '_n']) || 0;
+      tot += v;
+      return { naam, v };
+    });
+    totaal += tot;
+    return { label: GRAAD_LABELS[g.jaar], rijen, tot };
+  });
+
+  const aantalPaginas = parseInt(paginas) || 1;
+  const totaalKopieën = totaal * aantalPaginas;
+  const datumStr = gekozenDatum ? formatDatum(gekozenDatum) : null;
+  const typeLabel = kopieType === 'examen' ? 'Examen (ten laste school)' : 'Ander (ten laste leerling)';
+
+  // Platte tekst voor kopiëren
+  const tabelTekst = tabelRijen.map(g =>
+    `${g.label}:\n${g.rijen.map(r => `- ${r.naam}: ${r.v || '?'} ex.`).join('\n')}`
+  ).join('\n\n');
+  const opmerkingen = document.getElementById('opmerkingen').value.trim();
+  const opmerkingenStr = opmerkingen ? `\n* OPMERKINGEN: ${opmerkingen}` : '';
+
+  mailTekst = `Beste Lindsay,\n\nKan je de volgende bijlage kopiëren, aub?\n\n* bijlage: ${bijlage}\n* aantal pagina's: ${paginas}\n* aantal keren te kopiëren: ${totaal} – ${zijdig}\n* totaal aantal kopieën: ${totaalKopieën} (${totaal} ex. × ${paginas} p.)${optiesStr}${datumStr ? '\n* nodig tegen: ' + datumStr : ''}\n* type: ${typeLabel}${opmerkingenStr}\n\n${tabelTekst}\n\nAlvast bedankt.\n\nVriendelijke groeten\n\n${profiel.naam}`;
+
+  // HTML-versie van de mail in huisstijl
+  const tabelHtml = tabelRijen.map(g => `
+    <p style="font-weight:600;color:#2C3E50;margin:16px 0 6px;">${g.label}</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${g.rijen.map((r, i) => `
+      <tr style="background:${i % 2 === 0 ? '#F6F8F9' : '#ffffff'};">
+        <td style="padding:6px 10px;font-size:13px;color:#2C3E50;border-bottom:1px solid #E0E8E5;">${r.naam}</td>
+        <td style="padding:6px 10px;font-size:13px;color:#2C3E50;border-bottom:1px solid #E0E8E5;text-align:right;">${r.v || '?'} ex.</td>
+      </tr>`).join('')}
+    </table>`).join('');
+
+  mailHtml = `
+    <div style="font-family:'DM Sans',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#4DB896 0%,#3B7AB0 60%,#2E5F8A 100%);padding:20px 28px;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:16px;">
+        <div style="background:#ffffff;border-radius:8px;padding:6px 10px;display:inline-block;">
+          <img src="https://lh3.googleusercontent.com/Etoc7lExo8pFshZuDwHBcFiy7afjDkS7fNF7hDbAZE7n8giihOdzYcxsSbWRCJRuvJ6FAvwPwT_T_7fEi_h72DUR1ecGpU4aQ3Uj=l80-w1500-e365" alt="Sint-Paulusinstituut" height="40" style="display:block;" />
+        </div>
+        <div>
+          <div style="color:#ffffff;font-size:16px;font-weight:600;">Sint-Paulusinstituut Herzele</div>
+          <div style="color:rgba(255,255,255,0.75);font-size:12px;">Kopieeropdracht</div>
+        </div>
+      </div>
+      <!-- Body -->
+      <div style="padding:28px;border:1px solid #C8DAD6;border-top:none;border-radius:0 0 10px 10px;">
+        <p style="margin:0 0 16px;font-size:15px;color:#2C3E50;">Beste Lindsay,</p>
+        <p style="margin:0 0 20px;font-size:14px;color:#2C3E50;">Kan je de volgende bijlage kopiëren, aub?</p>
+
+        <!-- Details tabel -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#F6F8F9;border-radius:8px;margin-bottom:20px;">
+          <tr><td style="padding:8px 14px;font-size:13px;color:#5A7A8A;border-bottom:1px solid #E0E8E5;width:45%;">Bijlage</td><td style="padding:8px 14px;font-size:13px;font-weight:600;color:#2C3E50;border-bottom:1px solid #E0E8E5;">${bijlage}</td></tr>
+          <tr><td style="padding:8px 14px;font-size:13px;color:#5A7A8A;border-bottom:1px solid #E0E8E5;">Aantal pagina's</td><td style="padding:8px 14px;font-size:13px;font-weight:600;color:#2C3E50;border-bottom:1px solid #E0E8E5;">${paginas}</td></tr>
+          <tr><td style="padding:8px 14px;font-size:13px;color:#5A7A8A;border-bottom:1px solid #E0E8E5;">Aantal keren te kopiëren</td><td style="padding:8px 14px;font-size:13px;font-weight:600;color:#2C3E50;border-bottom:1px solid #E0E8E5;">${totaal} – ${zijdig}</td></tr>
+          <tr><td style="padding:8px 14px;font-size:13px;color:#5A7A8A;border-bottom:1px solid #E0E8E5;">Totaal aantal kopieën</td><td style="padding:8px 14px;font-size:13px;font-weight:600;color:#2C3E50;border-bottom:1px solid #E0E8E5;">${totaalKopieën} (${totaal} ex. × ${paginas} p.)</td></tr>
+          ${extraOpties.length ? `<tr><td style="padding:8px 14px;font-size:13px;color:#5A7A8A;border-bottom:1px solid #E0E8E5;">Opties</td><td style="padding:8px 14px;font-size:13px;font-weight:600;color:#2C3E50;border-bottom:1px solid #E0E8E5;">${extraOpties.join(', ')}</td></tr>` : ''}
+          ${datumStr ? `<tr><td style="padding:8px 14px;font-size:13px;color:#5A7A8A;border-bottom:1px solid #E0E8E5;">Nodig tegen</td><td style="padding:8px 14px;font-size:13px;font-weight:600;color:#2C3E50;border-bottom:1px solid #E0E8E5;">${datumStr}</td></tr>` : ''}
+          <tr><td style="padding:8px 14px;font-size:13px;color:#5A7A8A;border-bottom:${opmerkingen ? '1px solid #E0E8E5' : 'none'};">Type</td><td style="padding:8px 14px;font-size:13px;font-weight:600;color:${kopieType === 'examen' ? '#1A6645' : '#2E5F8A'};border-bottom:${opmerkingen ? '1px solid #E0E8E5' : 'none'};">${typeLabel}</td></tr>
+          ${opmerkingen ? `<tr><td style="padding:8px 14px;font-size:13px;color:#5A7A8A;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Opmerkingen</td><td style="padding:8px 14px;font-size:13px;font-weight:700;color:#A0291E;">${opmerkingen}</td></tr>` : ''}
+        </table>
+
+        <!-- Klassen -->
+        <div style="margin-bottom:20px;">
+          ${tabelHtml}
+        </div>
+
+        <!-- Afsluiting -->
+        <p style="margin:20px 0 12px;font-size:14px;color:#2C3E50;">Alvast bedankt.</p>
+        <p style="margin:0 0 16px;font-size:14px;color:#2C3E50;">Vriendelijke groeten</p>
+        <p style="margin:0 0 2px;font-size:14px;font-weight:600;color:#2C3E50;">${profiel.naam}</p>
+        <p style="margin:0;font-size:12px;color:#5A7A8A;">${profiel.email}</p>
+
+        <!-- Footer streep -->
+        <div style="margin-top:24px;padding-top:16px;border-top:1px solid #C8DAD6;text-align:center;">
+          <span style="font-size:11px;color:#9AB4BC;">Sint-Paulusinstituut Herzele &mdash; Burgemeester Matthijsstraat 5, 9550 Herzele</span>
+        </div>
+      </div>
+    </div>`;
+
+  // Toon HTML-preview in de tool
+  document.getElementById('mail-output').innerHTML = mailHtml;
+
+  // Registratie
+  slaRegistratieOp(bijlage, paginas, totaal, totaalKopieën, gekozen, groepen, zijdig, extraOpties);
+
+  document.getElementById('btn-open-mail').style.display = 'inline-block';
+  document.getElementById('notice-email').textContent = profiel.email;
+  document.getElementById('mail-notice').style.display = 'block';
+}
+
+function openMail() {
+  const bijlage = document.getElementById('bijlage').value || 'bijlage';
+  const onderwerpVeld = document.getElementById('onderwerp').value.trim() || ('Kopieën – ' + bijlage);
+  // Onderwerp alleen als su= meegeven — NIET herhalen in de body
+  const onderwerp = encodeURIComponent(onderwerpVeld);
+  const body = encodeURIComponent(mailTekst);
+  const emailEnc = encodeURIComponent(profiel.email);
+  // Gebruik rf=ao ipv view=cm om dubbele onderwerp-weergave te vermijden
+  const url = `https://mail.google.com/mail/u/${emailEnc}/?view=cm&fs=1&to=lindsay%40copycad.be&su=${onderwerp}&body=${body}&tf=1`;
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function kopieer() {
+  if (!mailTekst) return;
+  navigator.clipboard.writeText(mailTekst).then(() => {
+    const b = document.querySelector('.btn-row .btn');
+    b.textContent = '✓ Gekopieerd!';
+    setTimeout(() => b.textContent = 'Kopieer tekst', 2000);
+  });
+}
+
+// ─── TOGGLE HELPERS ───────────────────────────────────────────────────────────
+function setZijdig(v) {
+  dubbelzijdig = v === 'dbl';
+  document.getElementById('btn-dbl').classList.toggle('on', dubbelzijdig);
+  document.getElementById('btn-enk').classList.toggle('on', !dubbelzijdig);
+}
+
+function toggleOptie(key, el) {
+  opties[key] = !opties[key];
+  el.classList.toggle('on', opties[key]);
+}
+
+function setType(type, el) {
+  kopieType = kopieType === type ? null : type;
+  document.getElementById('btn-ander').classList.toggle('on', kopieType === 'ander');
+  document.getElementById('btn-examen').classList.toggle('on', kopieType === 'examen');
+  document.getElementById('type-waarschuwing').style.display = kopieType === 'examen' ? 'block' : 'none';
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'klassen') renderBeheerKlassen();
+  if (id === 'mail') renderKlasGrid();
+}
+
+// ─── REGISTRATIE ─────────────────────────────────────────────────────────────
+function slaRegistratieOp(bijlage, paginas, totaal, totaalKopieen, gekozen, groepen, zijdig, extraOpties) {
+  const klassenData = gekozen.map(naam => ({
+    naam,
+    aantal: parseInt(selected[safeId(naam) + '_n']) || 0
+  }));
+  const record = {
+    datum: new Date().toLocaleDateString('nl-BE'),
+    leerkracht: profiel.naam,
+    email: profiel.email,
+    bijlage,
+    paginas: parseInt(paginas) || 0,
+    zijdig,
+    opties: extraOpties.join(', ') || 'geen',
+    type: kopieType === 'examen' ? 'Examen (school)' : 'Ander (leerling)',
+    nodigTegen: gekozenDatum ? formatDatum(gekozenDatum) : '',
+    totaalKopieen,
+    klassen: klassenData
+  };
+  try {
+    const bestaand = JSON.parse(localStorage.getItem(REG_KEY) || '[]');
+    bestaand.push({ ...record, id: Date.now() });
+    localStorage.setItem(REG_KEY, JSON.stringify(bestaand));
+  } catch(e) { console.error('Lokale registratie mislukt:', e); }
+
+  if (SHEET_URL) {
+    stuurNaarSheet(record);
+  }
+}
+
+function stuurNaarSheet(record) {
+  const statusEl = document.getElementById('sheet-status');
+  fetch(SHEET_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record)
+  }).then(() => {
+    if (statusEl) {
+      statusEl.textContent = '✓ Gegevens doorgestuurd naar Google Sheet';
+      statusEl.style.color = '#1A6645';
+      statusEl.style.background = '#E8F5EE';
+      statusEl.style.display = 'block';
+      setTimeout(() => statusEl.style.display = 'none', 5000);
+    }
+  }).catch(err => {
+    if (statusEl) {
+      statusEl.textContent = '⚠ Kon niet doorsturen naar Sheet – data is lokaal bewaard.';
+      statusEl.style.color = '#A0291E';
+      statusEl.style.background = '#FBECEA';
+      statusEl.style.display = 'block';
+    }
+  });
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function safeId(naam) { return naam.replace(/[\s\/\.]/g, '_'); }
+
+function groepenVanKlassen(klasNamen) {
+  const jaren = [...new Set(klasNamen.map(n => {
+    const k = ALLE_KLASSEN.find(k => k.naam === n);
+    return k ? k.jaar : null;
+  }).filter(Boolean))].sort();
+  return jaren.map(j => ({
+    jaar: j,
+    klassen: klasNamen.filter(n => {
+      const k = ALLE_KLASSEN.find(k => k.naam === n);
+      return k && k.jaar === j;
+    })
+  }));
+}
+
+// ─── KALENDER ────────────────────────────────────────────────────────────────
+const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const MAAND_KORT = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+let kalDatum = new Date();
+let gekozenDatum = null;
+
+function toggleKalender() {
+  const pop = document.getElementById('kalender-popup');
+  if (pop.style.display === 'none') {
+    kalDatum = gekozenDatum ? new Date(gekozenDatum) : new Date();
+    renderKalender();
+    pop.style.display = 'block';
+  } else {
+    pop.style.display = 'none';
+  }
+}
+
+function kalenderNav(richting) {
+  kalDatum.setMonth(kalDatum.getMonth() + richting);
+  renderKalender();
+}
+
+function renderKalender() {
+  const jaar = kalDatum.getFullYear();
+  const maand = kalDatum.getMonth();
+  document.getElementById('kal-maand-jaar').textContent =
+    MAANDEN[maand].charAt(0).toUpperCase() + MAANDEN[maand].slice(1) + ' ' + jaar;
+  const container = document.getElementById('kal-dagen');
+  container.innerHTML = '';
+  let startdag = new Date(jaar, maand, 1).getDay() - 1;
+  if (startdag < 0) startdag = 6;
+  const aantalDagen = new Date(jaar, maand + 1, 0).getDate();
+  const vandaag = new Date();
+  for (let i = 0; i < startdag; i++) container.innerHTML += '<div></div>';
+  for (let dag = 1; dag <= aantalDagen; dag++) {
+    const d = new Date(jaar, maand, dag);
+    const isVandaag = d.toDateString() === vandaag.toDateString();
+    const isGekozen = gekozenDatum && new Date(gekozenDatum).toDateString() === d.toDateString();
+    const isBijgeleden = d < new Date(vandaag.getFullYear(), vandaag.getMonth(), vandaag.getDate());
+    const cel = document.createElement('div');
+    cel.textContent = dag;
+    cel.style.cssText = `text-align:center;padding:5px 2px;border-radius:6px;font-size:13px;
+      cursor:${isBijgeleden ? 'default' : 'pointer'};
+      color:${isGekozen ? '#fff' : isBijgeleden ? '#9AB4BC' : '#2C3E50'};
+      background:${isGekozen ? 'linear-gradient(135deg,#4DB896,#2E5F8A)' : isVandaag ? '#EEF4F2' : 'transparent'};
+      font-weight:${isVandaag || isGekozen ? '600' : '400'};`;
+    if (!isBijgeleden) {
+      cel.onmouseover = () => { if (!isGekozen) cel.style.background = '#EEF4F2'; };
+      cel.onmouseout = () => { if (!isGekozen) cel.style.background = 'transparent'; };
+      cel.onclick = () => kiesDatum(d);
+    }
+    container.appendChild(cel);
+  }
+}
+
+function kiesDatum(d) {
+  gekozenDatum = d;
+  const tekst = document.getElementById('datum-tekst');
+  if (d) {
+    tekst.textContent = `${d.getDate()} ${MAAND_KORT[d.getMonth()]} ${d.getFullYear()}`;
+    tekst.style.color = '#2C3E50';
+  } else {
+    tekst.textContent = 'Kies een datum';
+    tekst.style.color = '#5A7A8A';
+  }
+  document.getElementById('kalender-popup').style.display = 'none';
+}
+
+function formatDatum(d) {
+  if (!d) return '';
+  return `${d.getDate()} ${MAANDEN[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+document.addEventListener('click', (e) => {
+  const pop = document.getElementById('kalender-popup');
+  const wrap = pop && pop.parentElement;
+  if (pop && wrap && !wrap.contains(e.target)) pop.style.display = 'none';
+});
+
+init();
+</script>
+</body>
+</html>
